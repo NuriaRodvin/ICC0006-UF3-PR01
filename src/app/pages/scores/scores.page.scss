@@ -1,16 +1,105 @@
+// 🌌 Fondo animado de estrellas
 ion-content {
-    padding: 20px;
+    --background: black;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    animation: stars 60s linear infinite;
+    background-image: radial-gradient(white 1px, transparent 1px),
+                      radial-gradient(white 1px, transparent 1px);
+    background-size: 100px 100px;
+    background-position: 0 0, 50px 50px;
   }
   
+  @keyframes stars {
+    from {
+      background-position: 0 0, 50px 50px;
+    }
+    to {
+      background-position: 0 10000px, 50px 10000px;
+    }
+  }
+  
+  // 🎯 Contenedor principal
+  .scores-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    color: white;
+    text-shadow: 1px 1px 2px #000;
+  }
+  
+  // 🏆 Título con animación y fuente especial
   .titulo {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    color: #3366ff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: 1rem;
+  }
+  
+  .titulo-texto {
+    margin-left: 0.5rem;
     font-weight: bold;
   }
   
+  .icono-animado {
+    font-size: 2rem;
+    animation: parpadeo 1s infinite alternate;
+  }
+  
+  @keyframes parpadeo {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0.5;
+      transform: scale(1.2);
+    }
+  }
+  
+  // 📋 Puntuaciones
+  .puntuaciones {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 20px;
+  }
+  
+  .puntuaciones div {
+    padding: 8px;
+    margin: 4px 0;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  // 🎨 Colores automáticos por jugador
+  .jugador-color-0 {
+    color: #ffd700; // dorado
+  }
+  .jugador-color-1 {
+    color: #1e90ff; // azul
+  }
+  .jugador-color-2 {
+    color: #ff69b4; // rosa
+  }
+  .jugador-color-3 {
+    color: #32cd32; // verde
+  }
+  
+  // 🔘 Botones
   .botones {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 30px;
+    width: 100%;
+    max-width: 300px;
   }
   

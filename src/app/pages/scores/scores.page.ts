@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { NgIf, NgForOf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-scores',
   standalone: true,
-  imports: [IonicModule, NgIf, NgForOf],
+  imports: [IonicModule, NgIf, NgForOf, CommonModule],
   templateUrl: './scores.page.html',
   styleUrls: ['./scores.page.scss'],
 })

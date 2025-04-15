@@ -1,29 +1,32 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title class="titulo">
-      🏆 <span style="color: dodgerblue">Tabla de puntuaciones</span>
-    </ion-title>
+    <ion-title class="titulo-barra">🏆 Tabla de puntuaciones</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
-  <ion-list *ngIf="scores.length > 0">
-    <ion-item *ngFor="let jugador of scores">
-      <ion-label>
-        {{ jugador.name }} - {{ jugador.score }} pts
-      </ion-label>
-    </ion-item>
-  </ion-list>
+<ion-content fullscreen="true" class="ion-padding fondo">
+  <div class="scores-container">
+    <h2 class="titulo">
+      <span class="icono-animado">🏆</span>
+      <span class="titulo-texto">Tabla de puntuaciones</span>
+    </h2>
 
-  <div *ngIf="scores.length === 0" style="padding: 20px; text-align: center;">
-    <p>No hay puntuaciones registradas.</p>
-  </div>
+    <div class="puntuaciones">
+      <div *ngFor="let jugador of scores; let i = index"
+           [ngClass]="'jugador-color-' + (i % 4)">
+        {{ jugador.name }} - {{ jugador.score }} puntos
+      </div>
+    </div>
 
-  <div class="botones">
-    <ion-button expand="block" color="primary" (click)="volverInicio()">Volver al inicio</ion-button>
-    <ion-button expand="block" color="secondary" (click)="reiniciarPartida()">Reiniciar partida</ion-button>
+    <div class="botones">
+      <ion-button expand="block" color="light" (click)="volverInicio()">Volver al inicio</ion-button>
+      <ion-button expand="block" color="light" (click)="reiniciarPartida()">Reiniciar partida</ion-button>
+    </div>
   </div>
 </ion-content>
+
+
+
 
 
 
