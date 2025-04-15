@@ -41,23 +41,15 @@ export class GamePage implements AfterViewInit {
       const almacenadas = localStorage.getItem('scores');
       let scores = almacenadas ? JSON.parse(almacenadas) : [];
 
-      // Buscar si ya hay una puntuación de este jugador
       const existente = scores.find((entry: any) => entry.name === nombre);
 
       if (!existente || nuevaPuntuacion > existente.score) {
-        // Eliminar puntuaciones anteriores de ese jugador
         scores = scores.filter((entry: any) => entry.name !== nombre);
-
-        // Añadir la nueva puntuación más alta
         scores.push({ name: nombre, score: nuevaPuntuacion });
-
         console.log(`✅ Puntuación actualizada para ${nombre}: ${nuevaPuntuacion}`);
       }
 
-      // Guardar en localStorage
       localStorage.setItem('scores', JSON.stringify(scores));
-
-      // Ir a la pantalla de puntuaciones
       this.router.navigateByUrl('/pages/scores');
     }, 5000);
   }
@@ -74,11 +66,24 @@ export class GamePage implements AfterViewInit {
   goToScores() {
     this.router.navigateByUrl('/pages/scores');
   }
+
+  // 👉 Métodos para botones visuales (touch)
+  mover(direccion: string) {
+    const escena = this.game.scene.getScene('MainScene') as any;
+    escena.moverDesdeBoton?.(direccion);
+  }
+
+  parar() {
+    const escena = this.game.scene.getScene('MainScene') as any;
+    escena.pararDesdeBoton?.();
+  }
 }
 
+// 👉 ESCENA DEL JUEGO
 class MainScene extends Phaser.Scene {
   nave!: Phaser.Physics.Arcade.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  direccionBoton: string | null = null;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -93,31 +98,37 @@ class MainScene extends Phaser.Scene {
     this.add.image(0, 0, 'fondo').setOrigin(0);
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
-  
-    // ✅ Guardar las teclas en la propiedad de la clase
     this.cursors = this.input.keyboard?.createCursorKeys()!;
-
   }
-  
 
   override update(): void {
     if (!this.cursors) return;
-  
+
     this.nave.setVelocity(0);
-  
-    if (this.cursors.left?.isDown) {
+
+    if (this.cursors.left?.isDown || this.direccionBoton === 'izquierda') {
       this.nave.setVelocityX(-200);
-    } else if (this.cursors.right?.isDown) {
+    } else if (this.cursors.right?.isDown || this.direccionBoton === 'derecha') {
       this.nave.setVelocityX(200);
     }
-  
-    if (this.cursors.up?.isDown) {
+
+    if (this.cursors.up?.isDown || this.direccionBoton === 'arriba') {
       this.nave.setVelocityY(-200);
-    } else if (this.cursors.down?.isDown) {
+    } else if (this.cursors.down?.isDown || this.direccionBoton === 'abajo') {
       this.nave.setVelocityY(200);
     }
   }
-}  
+
+  // Métodos accesibles desde el componente
+  moverDesdeBoton(direccion: string) {
+    this.direccionBoton = direccion;
+  }
+
+  pararDesdeBoton() {
+    this.direccionBoton = null;
+  }
+}
+
 
 
 

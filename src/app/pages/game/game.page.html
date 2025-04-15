@@ -13,6 +13,17 @@
     <ion-button expand="block" color="medium" (click)="goToScores()">Ver Puntuaciones</ion-button>
   </div>
   
+  <div class="controles">
+    <div class="fila">
+      <button (mousedown)="mover('arriba')" (mouseup)="parar()" (touchstart)="mover('arriba')" (touchend)="parar()">⬆️</button>
+    </div>
+    <div class="fila">
+      <button (mousedown)="mover('izquierda')" (mouseup)="parar()" (touchstart)="mover('izquierda')" (touchend)="parar()">⬅️</button>
+      <button (mousedown)="mover('abajo')" (mouseup)="parar()" (touchstart)="mover('abajo')" (touchend)="parar()">⬇️</button>
+      <button (mousedown)="mover('derecha')" (mouseup)="parar()" (touchstart)="mover('derecha')" (touchend)="parar()">➡️</button>
+    </div>
+  </div>
+  
   
 
 </ion-content>
