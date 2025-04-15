@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Guardianes de la Galaxia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <div class="container">
+    <img src="../../../assets/img/nave.png" alt="Nave" class="logo" />
+    <h2>¡Bienvenida, piloto!</h2>
+
+    <ion-item>
+      <ion-label position="floating">Tu nombre</ion-label>
+      <ion-input [(ngModel)]="nombreJugador" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" (click)="empezarJuego()" [disabled]="!nombreJugador">
+      Empezar Partida
+    </ion-button>
+  </div>
+</ion-content>
+
