@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import Phaser from 'phaser';
 
@@ -46,14 +46,12 @@ class MainScene extends Phaser.Scene {
 
   create(): void {
     this.add.image(0, 0, 'fondo').setOrigin(0);
-
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
-
     this.input.keyboard?.createCursorKeys();
   }
 
-  update(): void {
+  override update(): void {
     if (!this.input.keyboard) return;
 
     const cursors = this.input.keyboard.createCursorKeys();
