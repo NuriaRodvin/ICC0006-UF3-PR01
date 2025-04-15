@@ -15,11 +15,6 @@ export class GamePage implements AfterViewInit {
 
   constructor(private router: Router) {}
 
-  // Método para ir a puntuaciones
-  goToScores() {
-  this.router.navigateByUrl('/pages/scores');
-  }
-
   ngAfterViewInit(): void {
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
@@ -31,12 +26,28 @@ export class GamePage implements AfterViewInit {
         default: 'arcade',
         arcade: {
           gravity: { x: 0, y: 0 },
-          debug: false
-        }
-      }
+          debug: false,
+        },
+      },
     };
 
     this.game = new Phaser.Game(config);
+
+    // ⏱ Simulación de fin de partida tras 5 segundos
+    setTimeout(() => {
+      const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
+      const puntuacion = Math.floor(Math.random() * 100); // puntuación aleatoria simulada
+
+      const almacenadas = localStorage.getItem('scores');
+      const scores = almacenadas ? JSON.parse(almacenadas) : [];
+
+      scores.push({ name: nombre, score: puntuacion });
+      localStorage.setItem('scores', JSON.stringify(scores));
+
+      console.log('✅ Nueva puntuación guardada:', { name: nombre, score: puntuacion });
+
+      this.router.navigateByUrl('/pages/scores');
+    }, 5000);
   }
 
   goHome() {
@@ -44,8 +55,12 @@ export class GamePage implements AfterViewInit {
   }
 
   restartGame() {
-    this.game.destroy(true); // destruye instancia actual
-    this.ngAfterViewInit();  // la vuelve a crear
+    this.game.destroy(true);
+    this.ngAfterViewInit();
+  }
+
+  goToScores() {
+    this.router.navigateByUrl('/pages/scores');
   }
 }
 
@@ -63,10 +78,8 @@ class MainScene extends Phaser.Scene {
 
   create(): void {
     this.add.image(0, 0, 'fondo').setOrigin(0);
-
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
-
     this.input.keyboard?.createCursorKeys();
   }
 
