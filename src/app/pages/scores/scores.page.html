@@ -1,13 +1,21 @@
-<ion-header [translucent]="true">
+<ion-header translucent="true">
   <ion-toolbar>
-    <ion-title>scores</ion-title>
+    <ion-title>Puntuaciones</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">scores</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content fullscreen="true">
+  <ion-list>
+    <ion-item *ngFor="let jugador of scores">
+      <ion-label>
+        {{ jugador.name }} - {{ jugador.score }} pts
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div class="botones">
+    <ion-button expand="block" color="primary" (click)="volverInicio()">Volver al Inicio</ion-button>
+    <ion-button expand="block" color="success" (click)="reiniciarPartida()">Reiniciar Partida</ion-button>
+  </div>
 </ion-content>
+

@@ -1,20 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-scores',
+  standalone: true,
+  imports: [IonicModule],
   templateUrl: './scores.page.html',
   styleUrls: ['./scores.page.scss'],
-  standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class ScoresPage implements OnInit {
+export class ScoresPage {
+  scores: { name: string; score: number }[] = [];
 
-  constructor() { }
+  constructor(private router: Router) {}
 
-  ngOnInit() {
+  ionViewWillEnter() {
+    const stored = localStorage.getItem('scores');
+    this.scores = stored ? JSON.parse(stored) : [];
+    this.scores.sort((a, b) => b.score - a.score);
   }
 
+  volverInicio() {
+    this.router.navigateByUrl('/pages/home');
+  }
+
+  reiniciarPartida() {
+    this.router.navigateByUrl('/pages/game');
+  }
 }
+
+

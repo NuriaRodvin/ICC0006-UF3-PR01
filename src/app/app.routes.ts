@@ -18,8 +18,8 @@ export const routes: Routes = [
   },
   {
     path: 'pages/scores',
-    loadComponent: () =>
-      import('./pages/scores/scores.page').then((m) => m.ScoresPage),
-  },
+    loadComponent: () => import('./pages/scores/scores.page').then(m => m.ScoresPage),
+  }
+  
 ];
 

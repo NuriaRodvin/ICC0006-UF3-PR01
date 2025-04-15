@@ -6,4 +6,16 @@
     align-items: center;
     overflow: hidden;
   }
+  #game-container {
+    width: 320px;
+    height: 480px;
+    margin: 0 auto;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
   

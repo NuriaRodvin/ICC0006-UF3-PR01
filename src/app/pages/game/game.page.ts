@@ -1,6 +1,7 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import Phaser from 'phaser';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -11,6 +12,8 @@ import Phaser from 'phaser';
 })
 export class GamePage implements AfterViewInit {
   game!: Phaser.Game;
+
+  constructor(private router: Router) {}
 
   ngAfterViewInit(): void {
     const config: Phaser.Types.Core.GameConfig = {
@@ -30,6 +33,15 @@ export class GamePage implements AfterViewInit {
 
     this.game = new Phaser.Game(config);
   }
+
+  goHome() {
+    this.router.navigateByUrl('/pages/home');
+  }
+
+  restartGame() {
+    this.game.destroy(true); // destruye instancia actual
+    this.ngAfterViewInit();  // la vuelve a crear
+  }
 }
 
 class MainScene extends Phaser.Scene {
@@ -46,8 +58,10 @@ class MainScene extends Phaser.Scene {
 
   create(): void {
     this.add.image(0, 0, 'fondo').setOrigin(0);
+
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
+
     this.input.keyboard?.createCursorKeys();
   }
 
