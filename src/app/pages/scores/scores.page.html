@@ -4,8 +4,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
-  <ion-list>
+<ion-content fullscreen="true" class="ion-padding">
+
+  <h2 class="titulo">🏆 Tabla de puntuaciones</h2>
+
+  <ion-list *ngIf="scores.length > 0; else sinDatos">
     <ion-item *ngFor="let jugador of scores">
       <ion-label>
         {{ jugador.name }} - {{ jugador.score }} pts
@@ -13,9 +16,14 @@
     </ion-item>
   </ion-list>
 
+  <ng-template #sinDatos>
+    <p class="texto-vacio">No hay puntuaciones guardadas aún.</p>
+  </ng-template>
+
   <div class="botones">
     <ion-button expand="block" color="primary" (click)="volverInicio()">Volver al Inicio</ion-button>
     <ion-button expand="block" color="success" (click)="reiniciarPartida()">Reiniciar Partida</ion-button>
   </div>
+
 </ion-content>
 
