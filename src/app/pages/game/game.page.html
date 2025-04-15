@@ -7,11 +7,12 @@
 <ion-content fullscreen="true">
   <div id="game-container"></div>
 
-  <!-- Botones en fila debajo del juego -->
   <div class="button-container">
-    <ion-button (click)="goHome()">Volver al Inicio</ion-button>
-    <ion-button color="medium" (click)="restartGame()">Reiniciar Partida</ion-button>
+    <ion-button expand="block" color="medium" (click)="goHome()">Volver al Inicio</ion-button>
+    <ion-button expand="block" color="medium" (click)="restartGame()">Reiniciar Partida</ion-button>
+    <ion-button expand="block" color="medium" (click)="goToScores()">Ver Puntuaciones</ion-button>
   </div>
+  
 </ion-content>
 
 

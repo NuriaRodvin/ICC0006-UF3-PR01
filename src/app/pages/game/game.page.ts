@@ -15,6 +15,11 @@ export class GamePage implements AfterViewInit {
 
   constructor(private router: Router) {}
 
+  // Método para ir a puntuaciones
+  goToScores() {
+  this.router.navigateByUrl('/pages/scores');
+  }
+
   ngAfterViewInit(): void {
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
