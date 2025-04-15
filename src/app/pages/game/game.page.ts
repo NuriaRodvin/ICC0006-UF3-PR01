@@ -33,19 +33,31 @@ export class GamePage implements AfterViewInit {
 
     this.game = new Phaser.Game(config);
 
-    // ⏱ Simulación de fin de partida tras 5 segundos
+    // 🧪 Simulación de fin de partida tras 5 segundos
     setTimeout(() => {
       const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
-      const puntuacion = Math.floor(Math.random() * 100); // puntuación aleatoria simulada
+      const nuevaPuntuacion = Math.floor(Math.random() * 100);
 
       const almacenadas = localStorage.getItem('scores');
-      const scores = almacenadas ? JSON.parse(almacenadas) : [];
+      let scores = almacenadas ? JSON.parse(almacenadas) : [];
 
-      scores.push({ name: nombre, score: puntuacion });
+      // Buscar si ya hay una puntuación de este jugador
+      const existente = scores.find((entry: any) => entry.name === nombre);
+
+      if (!existente || nuevaPuntuacion > existente.score) {
+        // Eliminar puntuaciones anteriores de ese jugador
+        scores = scores.filter((entry: any) => entry.name !== nombre);
+
+        // Añadir la nueva puntuación más alta
+        scores.push({ name: nombre, score: nuevaPuntuacion });
+
+        console.log(`✅ Puntuación actualizada para ${nombre}: ${nuevaPuntuacion}`);
+      }
+
+      // Guardar en localStorage
       localStorage.setItem('scores', JSON.stringify(scores));
 
-      console.log('✅ Nueva puntuación guardada:', { name: nombre, score: puntuacion });
-
+      // Ir a la pantalla de puntuaciones
       this.router.navigateByUrl('/pages/scores');
     }, 5000);
   }
@@ -102,5 +114,6 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
+
 
 
