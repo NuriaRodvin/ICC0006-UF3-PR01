@@ -78,6 +78,7 @@ export class GamePage implements AfterViewInit {
 
 class MainScene extends Phaser.Scene {
   nave!: Phaser.Physics.Arcade.Sprite;
+  cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -92,28 +93,31 @@ class MainScene extends Phaser.Scene {
     this.add.image(0, 0, 'fondo').setOrigin(0);
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
-    this.input.keyboard?.createCursorKeys();
+  
+    // ✅ Guardar las teclas en la propiedad de la clase
+    this.cursors = this.input.keyboard?.createCursorKeys()!;
+
   }
+  
 
   override update(): void {
-    if (!this.input.keyboard) return;
-
-    const cursors = this.input.keyboard.createCursorKeys();
+    if (!this.cursors) return;
+  
     this.nave.setVelocity(0);
-
-    if (cursors.left?.isDown) {
+  
+    if (this.cursors.left?.isDown) {
       this.nave.setVelocityX(-200);
-    } else if (cursors.right?.isDown) {
+    } else if (this.cursors.right?.isDown) {
       this.nave.setVelocityX(200);
     }
-
-    if (cursors.up?.isDown) {
+  
+    if (this.cursors.up?.isDown) {
       this.nave.setVelocityY(-200);
-    } else if (cursors.down?.isDown) {
+    } else if (this.cursors.down?.isDown) {
       this.nave.setVelocityY(200);
     }
   }
-}
+}  
 
 
 
