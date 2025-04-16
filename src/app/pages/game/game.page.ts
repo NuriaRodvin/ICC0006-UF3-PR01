@@ -128,18 +128,28 @@ class MainScene extends Phaser.Scene {
           const asteroide = this.asteroides.create(x, -50, 'asteroide') as Phaser.Physics.Arcade.Sprite;
           asteroide.setVelocityY(100);
           asteroide.setScale(0.5);
-          asteroide.setCollideWorldBounds(false);
         }
       },
     });
 
+    // 💥 Disparo vs asteroide
     this.physics.add.overlap(
       this.disparos,
       this.asteroides,
-      (disparoObj, asteroideObj) => this.colisionDisparoAsteroide(
-        disparoObj as Phaser.Physics.Arcade.Sprite,
-        asteroideObj as Phaser.Physics.Arcade.Sprite
-      ),
+      (disparo, asteroide) =>
+        this.colisionDisparoAsteroide(
+          disparo as Phaser.Physics.Arcade.Sprite,
+          asteroide as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
+    // ☠️ Nave vs asteroide
+    this.physics.add.overlap(
+      this.nave,
+      this.asteroides,
+      () => this.colisionNaveAsteroide(),
       undefined,
       this
     );
@@ -154,15 +164,30 @@ class MainScene extends Phaser.Scene {
     disparo.destroy();
     asteroide.destroy();
 
-    this.puntuacion += 10;
+    this.puntuacion += 1;
     this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
 
     if (this.puntuacion >= 150) {
-      this.terminarPartida();
+      this.terminarPartida(true);
     }
   }
 
-  terminarPartida() {
+  colisionNaveAsteroide() {
+    if (this.juegoTerminado) return;
+
+    this.juegoTerminado = true;
+    this.scene.pause();
+
+    this.add.text(160, 240, '¡Has perdido!', {
+      fontSize: '24px',
+      color: '#ff0000',
+      fontFamily: 'Arial',
+    }).setOrigin(0.5);
+
+    this.time.delayedCall(2000, () => this.guardarYSalir());
+  }
+
+  terminarPartida(victoria: boolean) {
     this.juegoTerminado = true;
     this.scene.pause();
 
@@ -172,20 +197,22 @@ class MainScene extends Phaser.Scene {
       fontFamily: 'Arial',
     }).setOrigin(0.5);
 
-    this.time.delayedCall(2000, () => {
-      const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
-      const almacenadas = localStorage.getItem('scores');
-      let scores = almacenadas ? JSON.parse(almacenadas) : [];
-      const existente = scores.find((entry: any) => entry.name === nombre);
+    this.time.delayedCall(2000, () => this.guardarYSalir());
+  }
 
-      if (!existente || this.puntuacion > (existente?.score ?? 0)) {
-        scores = scores.filter((entry: any) => entry.name !== nombre);
-        scores.push({ name: nombre, score: this.puntuacion });
-      }
+  guardarYSalir() {
+    const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
+    const almacenadas = localStorage.getItem('scores');
+    let scores = almacenadas ? JSON.parse(almacenadas) : [];
+    const existente = scores.find((entry: any) => entry.name === nombre);
 
-      localStorage.setItem('scores', JSON.stringify(scores));
-      window.location.href = '/pages/scores';
-    });
+    if (!existente || this.puntuacion > (existente?.score ?? 0)) {
+      scores = scores.filter((entry: any) => entry.name !== nombre);
+      scores.push({ name: nombre, score: this.puntuacion });
+    }
+
+    localStorage.setItem('scores', JSON.stringify(scores));
+    window.location.href = '/pages/scores';
   }
 
   override update(): void {
@@ -213,9 +240,7 @@ class MainScene extends Phaser.Scene {
 
     this.asteroides.children.iterate((obj): false => {
       const ast = obj as Phaser.Physics.Arcade.Sprite;
-      if (ast.y > 500) {
-        ast.destroy();
-      }
+      if (ast.y > 500) ast.destroy();
       return false;
     });
   }
@@ -245,3 +270,4 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
+
