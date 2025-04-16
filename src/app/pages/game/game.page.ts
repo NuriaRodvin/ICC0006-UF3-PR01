@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class GamePage implements AfterViewInit {
   game!: Phaser.Game;
+  juegoPausado: boolean = false;
 
   constructor(private router: Router) {}
 
@@ -32,6 +33,7 @@ export class GamePage implements AfterViewInit {
     };
 
     this.game = new Phaser.Game(config);
+    this.juegoPausado = false;
   }
 
   goHome() {
@@ -63,13 +65,13 @@ export class GamePage implements AfterViewInit {
   }
 
   pausarJuego() {
-    const escena = this.game.scene.getScene('MainScene') as any;
-    escena.pausarJuego?.();
+    this.game.scene.pause('MainScene');
+    this.juegoPausado = true;
   }
 
   reanudarJuego() {
-    const escena = this.game.scene.getScene('MainScene') as any;
-    escena.reanudarJuego?.();
+    this.game.scene.resume('MainScene');
+    this.juegoPausado = false;
   }
 }
 
@@ -86,7 +88,6 @@ class MainScene extends Phaser.Scene {
 
   puntuacion: number = 0;
   textoPuntuacion!: Phaser.GameObjects.Text;
-
   juegoTerminado: boolean = false;
 
   constructor() {

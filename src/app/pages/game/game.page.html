@@ -4,17 +4,20 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
-  <div id="game-container"></div>
+<ion-content fullscreen="true" class="ion-padding">
+  <!-- Canvas del juego -->
+  <div id="game-container" style="height: 480px; max-width: 320px; margin: 0 auto;"></div>
 
+  <!-- Botones superiores siempre visibles -->
   <div class="button-container">
-    <ion-button class="boton-superior" expand="block" (click)="goHome()">Volver al Inicio</ion-button>
-    <ion-button class="boton-superior" expand="block" (click)="restartGame()">Reiniciar Partida</ion-button>
-    <ion-button class="boton-superior" expand="block" (click)="goToScores()">Ver Puntuaciones</ion-button>
-    <ion-button class="boton-superior" expand="block" (click)="pausarJuego()">⏸ Pausar</ion-button>
-    <ion-button class="boton-superior" expand="block" (click)="reanudarJuego()">▶️ Reanudar</ion-button>
+    <ion-button expand="block" (click)="goHome()">Volver al Inicio</ion-button>
+    <ion-button expand="block" (click)="restartGame()">Reiniciar Partida</ion-button>
+    <ion-button expand="block" (click)="goToScores()">Ver Puntuaciones</ion-button>
+    <ion-button expand="block" color="medium" (click)="pausarJuego()">⏸ Pausar</ion-button>
+    <ion-button expand="block" color="success" (click)="reanudarJuego()">▶️ Reanudar</ion-button>
   </div>
 
+  <!-- Controles de movimiento -->
   <div class="controles">
     <div class="fila">
       <button (mousedown)="mover('arriba')" (mouseup)="parar()" (touchstart)="mover('arriba')" (touchend)="parar()">⬆️</button>
@@ -25,7 +28,7 @@
       <button (mousedown)="mover('derecha')" (mouseup)="parar()" (touchstart)="mover('derecha')" (touchend)="parar()">➡️</button>
     </div>
 
-    <!-- Botón de disparo (imagen de pistola) -->
+    <!-- Botón de disparo con imagen -->
     <div class="disparo-boton-container">
       <button class="boton-disparo" (mousedown)="dispararDesdeBoton()" (touchstart)="dispararDesdeBoton()">
         <img src="assets/img/pistola.png" alt="Disparar" style="width: 32px; height: 32px;" />
@@ -33,6 +36,8 @@
     </div>
   </div>
 </ion-content>
+
+
 
 
 
