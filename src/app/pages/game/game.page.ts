@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
 })
+// ...importaciones y @Component igual que antes
+
 export class GamePage implements AfterViewInit {
   game!: Phaser.Game;
 
@@ -33,14 +35,11 @@ export class GamePage implements AfterViewInit {
 
     this.game = new Phaser.Game(config);
 
-    // 🧪 Simulación de fin de partida tras 5 segundos
     setTimeout(() => {
       const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
       const nuevaPuntuacion = Math.floor(Math.random() * 100);
-
       const almacenadas = localStorage.getItem('scores');
       let scores = almacenadas ? JSON.parse(almacenadas) : [];
-
       const existente = scores.find((entry: any) => entry.name === nombre);
 
       if (!existente || nuevaPuntuacion > existente.score) {
@@ -67,7 +66,6 @@ export class GamePage implements AfterViewInit {
     this.router.navigateByUrl('/pages/scores');
   }
 
-  // 👉 Métodos para botones visuales (touch)
   mover(direccion: string) {
     const escena = this.game.scene.getScene('MainScene') as any;
     escena.moverDesdeBoton?.(direccion);
@@ -77,10 +75,18 @@ export class GamePage implements AfterViewInit {
     const escena = this.game.scene.getScene('MainScene') as any;
     escena.pararDesdeBoton?.();
   }
+
+  dispararDesdeBoton() {
+    const escena = this.game.scene.getScene('MainScene') as any;
+    escena.disparar?.();
+  }
 }
 
 // 👉 ESCENA DEL JUEGO
 class MainScene extends Phaser.Scene {
+  disparos!: Phaser.Physics.Arcade.Group;
+  ultimaTeclaEspacio: number = 0;
+
   nave!: Phaser.Physics.Arcade.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   direccionBoton: string | null = null;
@@ -92,6 +98,7 @@ class MainScene extends Phaser.Scene {
   preload(): void {
     this.load.image('fondo', 'assets/img/fondo.png');
     this.load.image('nave', 'assets/img/nave.png');
+    this.load.image('disparo', 'assets/img/disparo.png');
   }
 
   create(): void {
@@ -99,6 +106,7 @@ class MainScene extends Phaser.Scene {
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
     this.cursors = this.input.keyboard?.createCursorKeys()!;
+    this.disparos = this.physics.add.group();
   }
 
   override update(): void {
@@ -117,9 +125,14 @@ class MainScene extends Phaser.Scene {
     } else if (this.cursors.down?.isDown || this.direccionBoton === 'abajo') {
       this.nave.setVelocityY(200);
     }
+
+    const ahora = this.time.now;
+    if (this.cursors.space?.isDown && ahora - this.ultimaTeclaEspacio > 300) {
+      this.disparar();
+      this.ultimaTeclaEspacio = ahora;
+    }
   }
 
-  // Métodos accesibles desde el componente
   moverDesdeBoton(direccion: string) {
     this.direccionBoton = direccion;
   }
@@ -127,8 +140,12 @@ class MainScene extends Phaser.Scene {
   pararDesdeBoton() {
     this.direccionBoton = null;
   }
+
+  disparar() {
+    const disparo = this.disparos.create(this.nave.x, this.nave.y - 20, 'disparo');
+    disparo.setVelocityY(-300);
+    disparo.setScale(0.3);         // 🔽 Tamaño reducido del disparo
+    disparo.setAngle(-90);         // 🔄 Gira si es horizontal
+  }
+  
 }
-
-
-
-

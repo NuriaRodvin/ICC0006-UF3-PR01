@@ -19,7 +19,7 @@ ion-content {
     }
   }
   
-  // 🎯 Contenedor principal
+  // 🎯 Contenedor de puntuaciones
   .scores-container {
     display: flex;
     flex-direction: column;
@@ -29,7 +29,7 @@ ion-content {
     text-shadow: 1px 1px 2px #000;
   }
   
-  // 🏆 Título con animación y fuente especial
+  // 🏆 Título animado
   .titulo {
     display: flex;
     align-items: center;
@@ -62,7 +62,7 @@ ion-content {
     }
   }
   
-  // 📋 Puntuaciones
+  // 📋 Puntuaciones en lista
   .puntuaciones {
     background: rgba(255, 255, 255, 0.1);
     padding: 16px;
@@ -81,25 +81,98 @@ ion-content {
   }
   
   // 🎨 Colores automáticos por jugador
-  .jugador-color-0 {
-    color: #ffd700; // dorado
-  }
-  .jugador-color-1 {
-    color: #1e90ff; // azul
-  }
-  .jugador-color-2 {
-    color: #ff69b4; // rosa
-  }
-  .jugador-color-3 {
-    color: #32cd32; // verde
+  .jugador-color-0 { color: #ffd700; } // dorado
+  .jugador-color-1 { color: #1e90ff; } // azul
+  .jugador-color-2 { color: #ff69b4; } // rosa
+  .jugador-color-3 { color: #32cd32; } // verde
+  
+  // 📦 Contenedor principal del juego
+  #game-container {
+    margin: 0 auto;
+    display: block;
+    background: black;
   }
   
-  // 🔘 Botones
+  // 🌟 Botones superiores tipo ION con look sci-fi
+  .boton-superior {
+    --background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    --color: #00ffff;
+    --border-radius: 12px;
+    --box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    margin: 0 5px;
+  
+    &:hover {
+      filter: brightness(1.2);
+      transform: scale(1.03);
+    }
+  
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+  
+  
+  // 🔘 Contenedor de botones superiores
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 12px 0;
+  }
+  
+  // 🎮 Controles de movimiento y disparo
+  .controles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  
+    .fila {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+  }
+  
+  // 🎮 Estilos comunes para dirección y disparo
+  .controles button,
+  .boton-disparo {
+    background-color: #111;
+    color: #00ffff;
+    border: 2px solid #00ffff;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+  
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
+    }
+  
+    &:active {
+      transform: scale(0.95);
+    }
+  
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  
+  // 🧮 Botones en pantalla de puntuaciones
   .botones {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
     max-width: 300px;
+    margin-top: 16px;
   }
   

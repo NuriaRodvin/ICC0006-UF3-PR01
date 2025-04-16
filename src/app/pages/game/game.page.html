@@ -8,11 +8,12 @@
   <div id="game-container"></div>
 
   <div class="button-container">
-    <ion-button expand="block" color="medium" (click)="goHome()">Volver al Inicio</ion-button>
-    <ion-button expand="block" color="medium" (click)="restartGame()">Reiniciar Partida</ion-button>
-    <ion-button expand="block" color="medium" (click)="goToScores()">Ver Puntuaciones</ion-button>
+    <ion-button class="boton-superior" expand="block" (click)="goHome()">Volver al Inicio</ion-button>
+    <ion-button class="boton-superior" expand="block" (click)="restartGame()">Reiniciar Partida</ion-button>
+    <ion-button class="boton-superior" expand="block" (click)="goToScores()">Ver Puntuaciones</ion-button>
   </div>
   
+
   <div class="controles">
     <div class="fila">
       <button (mousedown)="mover('arriba')" (mouseup)="parar()" (touchstart)="mover('arriba')" (touchend)="parar()">⬆️</button>
@@ -22,10 +23,20 @@
       <button (mousedown)="mover('abajo')" (mouseup)="parar()" (touchstart)="mover('abajo')" (touchend)="parar()">⬇️</button>
       <button (mousedown)="mover('derecha')" (mouseup)="parar()" (touchstart)="mover('derecha')" (touchend)="parar()">➡️</button>
     </div>
+
+    <!-- Botón de disparo (imagen de pistola) -->
+    <div class="disparo-boton-container">
+      <button class="boton-disparo" (mousedown)="dispararDesdeBoton()" (touchstart)="dispararDesdeBoton()">
+        <img src="assets/img/pistola.png" alt="Disparar" style="width: 32px; height: 32px;" />
+      </button>
+    </div>
   </div>
+</ion-content>
+
+
   
   
 
-</ion-content>
+
 
 
