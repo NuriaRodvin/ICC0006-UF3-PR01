@@ -61,6 +61,16 @@ export class GamePage implements AfterViewInit {
     const escena = this.game.scene.getScene('MainScene') as any;
     escena.disparar?.();
   }
+
+  pausarJuego() {
+    const escena = this.game.scene.getScene('MainScene') as any;
+    escena.pausarJuego?.();
+  }
+
+  reanudarJuego() {
+    const escena = this.game.scene.getScene('MainScene') as any;
+    escena.reanudarJuego?.();
+  }
 }
 
 // 👉 ESCENA DEL JUEGO
@@ -76,6 +86,8 @@ class MainScene extends Phaser.Scene {
 
   puntuacion: number = 0;
   textoPuntuacion!: Phaser.GameObjects.Text;
+
+  juegoTerminado: boolean = false;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -99,7 +111,6 @@ class MainScene extends Phaser.Scene {
     this.disparos = this.physics.add.group();
     this.asteroides = this.physics.add.group();
 
-    // 🎯 Mostrar puntuación
     this.textoPuntuacion = this.add.text(10, 10, 'Puntos: 0', {
       fontSize: '18px',
       color: '#ffffff',
@@ -107,20 +118,20 @@ class MainScene extends Phaser.Scene {
     });
     this.textoPuntuacion.setDepth(1);
 
-    // 🚀 Generación de asteroides
     this.time.addEvent({
       delay: 1500,
       loop: true,
       callback: () => {
-        const x = Phaser.Math.Between(20, 300);
-        const asteroide = this.asteroides.create(x, -50, 'asteroide') as Phaser.Physics.Arcade.Sprite;
-        asteroide.setVelocityY(100);
-        asteroide.setScale(0.5);
-        asteroide.setCollideWorldBounds(false);
+        if (!this.juegoTerminado) {
+          const x = Phaser.Math.Between(20, 300);
+          const asteroide = this.asteroides.create(x, -50, 'asteroide') as Phaser.Physics.Arcade.Sprite;
+          asteroide.setVelocityY(100);
+          asteroide.setScale(0.5);
+          asteroide.setCollideWorldBounds(false);
+        }
       },
     });
 
-    // 💥 Colisiones entre disparos y asteroides
     this.physics.add.overlap(
       this.disparos,
       this.asteroides,
@@ -137,23 +148,21 @@ class MainScene extends Phaser.Scene {
     const explosion = this.add.image(asteroide.x, asteroide.y, 'explosion');
     explosion.setScale(0.09);
     explosion.setOrigin(0.5);
-
     this.time.delayedCall(300, () => explosion.destroy());
 
     disparo.destroy();
     asteroide.destroy();
 
-    // 🎯 Aumentar puntuación real
     this.puntuacion += 10;
     this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
 
-    // 🏁 Si llega a 150, terminar la partida
     if (this.puntuacion >= 150) {
       this.terminarPartida();
     }
   }
 
   terminarPartida() {
+    this.juegoTerminado = true;
     this.scene.pause();
 
     this.add.text(160, 240, '¡Victoria!', {
@@ -164,7 +173,6 @@ class MainScene extends Phaser.Scene {
 
     this.time.delayedCall(2000, () => {
       const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
-
       const almacenadas = localStorage.getItem('scores');
       let scores = almacenadas ? JSON.parse(almacenadas) : [];
       const existente = scores.find((entry: any) => entry.name === nombre);
@@ -180,7 +188,7 @@ class MainScene extends Phaser.Scene {
   }
 
   override update(): void {
-    if (!this.cursors) return;
+    if (!this.cursors || this.scene.isPaused()) return;
 
     this.nave.setVelocity(0);
 
@@ -224,5 +232,15 @@ class MainScene extends Phaser.Scene {
     disparo.setVelocityY(-300);
     disparo.setScale(0.3);
     disparo.setAngle(-90);
+  }
+
+  pausarJuego() {
+    this.scene.pause();
+  }
+
+  reanudarJuego() {
+    if (!this.juegoTerminado) {
+      this.scene.resume();
+    }
   }
 }
