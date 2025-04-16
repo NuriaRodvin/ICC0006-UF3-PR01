@@ -62,6 +62,7 @@ export class GamePage implements AfterViewInit {
 
   dispararDesdeBoton() {
     const escena = this.game.scene.getScene('MainScene') as any;
+    escena.sonidoDisparo?.play();           // ✅ sonido solo aquí
     escena.disparar?.();
   }
 
@@ -91,11 +92,26 @@ class MainScene extends Phaser.Scene {
   textoPuntuacion!: Phaser.GameObjects.Text;
   juegoTerminado: boolean = false;
 
+  // 🎵 SONIDOS
+  musicaFondo!: Phaser.Sound.BaseSound;
+  sonidoDisparo!: Phaser.Sound.BaseSound;
+  sonidoExplosion!: Phaser.Sound.BaseSound;
+  musicaGanador!: Phaser.Sound.BaseSound;
+  musicaDerrota!: Phaser.Sound.BaseSound;
+
   constructor() {
     super({ key: 'MainScene' });
   }
 
   preload(): void {
+    // Sonidos
+    this.load.audio('musica_fondo', 'assets/audio/musica_fondo.mp3');
+    this.load.audio('disparo', 'assets/audio/disparo.mp3');
+    this.load.audio('explosion', 'assets/audio/explosion.mp3');
+    this.load.audio('ganador', 'assets/audio/ganador.mp3');
+    this.load.audio('derrota', 'assets/audio/derrota.mp3');
+
+    // Imágenes
     this.load.image('fondo', 'assets/img/fondo.png');
     this.load.image('nave', 'assets/img/nave.png');
     this.load.image('disparo', 'assets/img/disparo.png');
@@ -113,6 +129,15 @@ class MainScene extends Phaser.Scene {
     this.disparos = this.physics.add.group();
     this.asteroides = this.physics.add.group();
 
+    // 🎵 Cargar sonidos
+    this.musicaFondo = this.sound.add('musica_fondo', { loop: true, volume: 0.3 });
+    this.sonidoDisparo = this.sound.add('disparo');
+    this.sonidoExplosion = this.sound.add('explosion');
+    this.musicaGanador = this.sound.add('ganador');
+    this.musicaDerrota = this.sound.add('derrota');
+
+    this.musicaFondo.play();
+
     this.textoPuntuacion = this.add.text(10, 10, 'Puntos: 0', {
       fontSize: '18px',
       color: '#ffffff',
@@ -129,7 +154,6 @@ class MainScene extends Phaser.Scene {
           const asteroide = this.asteroides.create(x, -50, 'asteroide') as Phaser.Physics.Arcade.Sprite;
           asteroide.setVelocityY(100);
           asteroide.setScale(0.5);
-          asteroide.setCollideWorldBounds(false);
         }
       },
     });
@@ -154,11 +178,18 @@ class MainScene extends Phaser.Scene {
     );
   }
 
+  disparar() {
+    const disparo = this.disparos.create(this.nave.x, this.nave.y - 20, 'disparo') as Phaser.Physics.Arcade.Sprite;
+    disparo.setVelocityY(-300);
+    disparo.setScale(0.3);
+    disparo.setAngle(-90);
+  }
+
   colisionDisparoAsteroide(disparo: Phaser.Physics.Arcade.Sprite, asteroide: Phaser.Physics.Arcade.Sprite) {
     const explosion = this.add.image(asteroide.x, asteroide.y, 'explosion');
-    explosion.setScale(0.09);
-    explosion.setOrigin(0.5);
+    explosion.setScale(0.09).setOrigin(0.5);
     this.time.delayedCall(300, () => explosion.destroy());
+    this.sonidoExplosion.play();
 
     disparo.destroy();
     asteroide.destroy();
@@ -174,18 +205,19 @@ class MainScene extends Phaser.Scene {
   colisionNaveAsteroide() {
     if (this.juegoTerminado) return;
     this.juegoTerminado = true;
-  
+
     this.add.text(160, 240, '💥 Has perdido', {
       fontSize: '24px',
       color: '#ff0000',
       fontFamily: 'Arial',
     }).setOrigin(0.5);
-  
-    // Añade un pequeño retraso antes de pausar, para que se vea el texto
+
+    this.musicaFondo.stop();
+    this.musicaDerrota.play();
+
     this.time.delayedCall(500, () => {
       this.scene.pause();
-  
-      // Muestra el confirm() ligeramente después de pausar para evitar bloqueos visuales
+
       setTimeout(() => {
         const reiniciar = confirm('💥 Has perdido. ¿Quieres reiniciar la partida?');
         if (reiniciar) {
@@ -195,7 +227,6 @@ class MainScene extends Phaser.Scene {
       }, 100);
     });
   }
-  
 
   terminarPartida() {
     this.juegoTerminado = true;
@@ -206,6 +237,9 @@ class MainScene extends Phaser.Scene {
       color: '#00ff00',
       fontFamily: 'Arial',
     }).setOrigin(0.5);
+
+    this.musicaFondo.stop();
+    this.musicaGanador.play();
 
     this.time.delayedCall(2000, () => {
       const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
@@ -243,6 +277,7 @@ class MainScene extends Phaser.Scene {
     const ahora = this.time.now;
     if (this.cursors.space?.isDown && ahora - this.ultimaTeclaEspacio > 300) {
       this.disparar();
+      this.sonidoDisparo.play(); // ✅ solo aquí
       this.ultimaTeclaEspacio = ahora;
     }
 
@@ -263,13 +298,6 @@ class MainScene extends Phaser.Scene {
     this.direccionBoton = null;
   }
 
-  disparar() {
-    const disparo = this.disparos.create(this.nave.x, this.nave.y - 20, 'disparo') as Phaser.Physics.Arcade.Sprite;
-    disparo.setVelocityY(-300);
-    disparo.setScale(0.3);
-    disparo.setAngle(-90);
-  }
-
   pausarJuego() {
     this.scene.pause();
   }
@@ -280,6 +308,8 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
+
+
 
 
 
