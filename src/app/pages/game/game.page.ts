@@ -33,6 +33,7 @@ export class GamePage implements AfterViewInit {
     };
 
     this.game = new Phaser.Game(config);
+    (window as any).gamePageRef = this;
     this.juegoPausado = false;
   }
 
@@ -103,11 +104,6 @@ class MainScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Reinicia estado
-    this.juegoTerminado = false;
-    this.puntuacion = 0;
-    this.direccionBoton = null;
-
     this.add.image(0, 0, 'fondo').setOrigin(0);
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
@@ -138,7 +134,6 @@ class MainScene extends Phaser.Scene {
       },
     });
 
-    // Colisión disparo con asteroide
     this.physics.add.overlap(
       this.disparos,
       this.asteroides,
@@ -150,7 +145,6 @@ class MainScene extends Phaser.Scene {
       this
     );
 
-    // Colisión nave con asteroide
     this.physics.add.overlap(
       this.nave,
       this.asteroides,
@@ -178,19 +172,30 @@ class MainScene extends Phaser.Scene {
   }
 
   colisionNaveAsteroide() {
+    if (this.juegoTerminado) return;
     this.juegoTerminado = true;
-    this.scene.pause();
-
+  
     this.add.text(160, 240, '💥 Has perdido', {
       fontSize: '24px',
       color: '#ff0000',
       fontFamily: 'Arial',
     }).setOrigin(0.5);
-
-    this.time.delayedCall(2000, () => {
-      this.scene.restart(); // ✅ reinicio limpio
+  
+    // Añade un pequeño retraso antes de pausar, para que se vea el texto
+    this.time.delayedCall(500, () => {
+      this.scene.pause();
+  
+      // Muestra el confirm() ligeramente después de pausar para evitar bloqueos visuales
+      setTimeout(() => {
+        const reiniciar = confirm('💥 Has perdido. ¿Quieres reiniciar la partida?');
+        if (reiniciar) {
+          const gamePage = (window as any).gamePageRef;
+          gamePage?.restartGame?.();
+        }
+      }, 100);
     });
   }
+  
 
   terminarPartida() {
     this.juegoTerminado = true;
@@ -275,6 +280,7 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
+
 
 
 
