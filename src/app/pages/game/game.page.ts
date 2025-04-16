@@ -62,7 +62,7 @@ export class GamePage implements AfterViewInit {
 
   dispararDesdeBoton() {
     const escena = this.game.scene.getScene('MainScene') as any;
-    escena.sonidoDisparo?.play();           // ✅ sonido solo aquí
+    escena.sonidoDisparo?.play();
     escena.disparar?.();
   }
 
@@ -104,19 +104,20 @@ class MainScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // Sonidos
     this.load.audio('musica_fondo', 'assets/audio/musica_fondo.mp3');
     this.load.audio('disparo', 'assets/audio/disparo.mp3');
     this.load.audio('explosion', 'assets/audio/explosion.mp3');
     this.load.audio('ganador', 'assets/audio/ganador.mp3');
     this.load.audio('derrota', 'assets/audio/derrota.mp3');
 
-    // Imágenes
     this.load.image('fondo', 'assets/img/fondo.png');
     this.load.image('nave', 'assets/img/nave.png');
     this.load.image('disparo', 'assets/img/disparo.png');
-    this.load.image('asteroide', 'assets/img/asteroide.png');
     this.load.image('explosion', 'assets/img/explosion.png');
+
+    this.load.image('asteroide_grande', 'assets/img/asteroide_grande.png');
+    this.load.image('asteroide_mediano', 'assets/img/asteroide_mediano.png');
+    this.load.image('asteroide', 'assets/img/asteroide.png');
   }
 
   create(): void {
@@ -129,7 +130,6 @@ class MainScene extends Phaser.Scene {
     this.disparos = this.physics.add.group();
     this.asteroides = this.physics.add.group();
 
-    // 🎵 Cargar sonidos
     this.musicaFondo = this.sound.add('musica_fondo', { loop: true, volume: 0.3 });
     this.sonidoDisparo = this.sound.add('disparo');
     this.sonidoExplosion = this.sound.add('explosion');
@@ -150,32 +150,40 @@ class MainScene extends Phaser.Scene {
       loop: true,
       callback: () => {
         if (!this.juegoTerminado) {
+          const tipo = Phaser.Math.Between(1, 3);
+          let sprite = '';
+          let velocidad = 100;
+          let escala = 0.3;
+          let puntos = 1;
+
+          if (tipo === 1) {
+            sprite = 'asteroide_grande';
+            velocidad = 80;
+            escala = 0.09;
+            puntos = 1;
+          } else if (tipo === 2) {
+            sprite = 'asteroide_mediano';
+            velocidad = 120;
+            escala = 0.07;
+            puntos = 2;
+          } else {
+            sprite = 'asteroide';
+            velocidad = 160;
+            escala = 0.07;
+            puntos = 3;
+          }
+
           const x = Phaser.Math.Between(20, 300);
-          const asteroide = this.asteroides.create(x, -50, 'asteroide') as Phaser.Physics.Arcade.Sprite;
-          asteroide.setVelocityY(100);
-          asteroide.setScale(0.5);
+          const asteroide = this.asteroides.create(x, -50, sprite) as Phaser.Physics.Arcade.Sprite;
+          asteroide.setVelocityY(velocidad);
+          asteroide.setScale(escala);
+          (asteroide as any).puntos = puntos;
         }
       },
     });
 
-    this.physics.add.overlap(
-      this.disparos,
-      this.asteroides,
-      (disparoObj, asteroideObj) => this.colisionDisparoAsteroide(
-        disparoObj as Phaser.Physics.Arcade.Sprite,
-        asteroideObj as Phaser.Physics.Arcade.Sprite
-      ),
-      undefined,
-      this
-    );
-
-    this.physics.add.overlap(
-      this.nave,
-      this.asteroides,
-      () => this.colisionNaveAsteroide(),
-      undefined,
-      this
-    );
+    this.physics.add.overlap(this.disparos, this.asteroides, this.colisionDisparoAsteroide, undefined, this);
+    this.physics.add.overlap(this.nave, this.asteroides, this.colisionNaveAsteroide, undefined, this);
   }
 
   disparar() {
@@ -191,11 +199,12 @@ class MainScene extends Phaser.Scene {
     this.time.delayedCall(300, () => explosion.destroy());
     this.sonidoExplosion.play();
 
+    const puntosGanados = (asteroide as any).puntos || 1;
+    this.puntuacion += puntosGanados;
+    this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
+
     disparo.destroy();
     asteroide.destroy();
-
-    this.puntuacion += 1;
-    this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
 
     if (this.puntuacion >= 150) {
       this.terminarPartida();
@@ -277,7 +286,7 @@ class MainScene extends Phaser.Scene {
     const ahora = this.time.now;
     if (this.cursors.space?.isDown && ahora - this.ultimaTeclaEspacio > 300) {
       this.disparar();
-      this.sonidoDisparo.play(); // ✅ solo aquí
+      this.sonidoDisparo.play(); // 🔊 Solo aquí
       this.ultimaTeclaEspacio = ahora;
     }
 
@@ -308,6 +317,7 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
+
 
 
 
