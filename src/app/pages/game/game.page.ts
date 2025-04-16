@@ -91,6 +91,9 @@ class MainScene extends Phaser.Scene {
   direccionBoton: string | null = null;
   teclaEspacio!: Phaser.Input.Keyboard.Key;
 
+  puntuacion: number = 0;
+  textoPuntuacion!: Phaser.GameObjects.Text;
+
   constructor() {
     super({ key: 'MainScene' });
   }
@@ -100,7 +103,7 @@ class MainScene extends Phaser.Scene {
     this.load.image('nave', 'assets/img/nave.png');
     this.load.image('disparo', 'assets/img/disparo.png');
     this.load.image('asteroide', 'assets/img/asteroide.png');
-    this.load.image('explosion', 'assets/img/explosion.png'); // ✅ imagen estática
+    this.load.image('explosion', 'assets/img/explosion.png'); // imagen estática
   }
 
   create(): void {
@@ -113,6 +116,15 @@ class MainScene extends Phaser.Scene {
     this.disparos = this.physics.add.group();
     this.asteroides = this.physics.add.group();
 
+    // 🎯 Texto de puntuación
+    this.textoPuntuacion = this.add.text(10, 10, 'Puntos: 0', {
+      fontSize: '18px',
+      color: '#ffffff',
+      fontFamily: 'Arial',
+    });
+    this.textoPuntuacion.setDepth(1);
+
+    // 🚀 Generación de asteroides
     this.time.addEvent({
       delay: 1500,
       loop: true,
@@ -125,6 +137,7 @@ class MainScene extends Phaser.Scene {
       },
     });
 
+    // 💥 Colisiones entre disparos y asteroides
     this.physics.add.overlap(
       this.disparos,
       this.asteroides,
@@ -139,15 +152,17 @@ class MainScene extends Phaser.Scene {
 
   colisionDisparoAsteroide(disparo: Phaser.Physics.Arcade.Sprite, asteroide: Phaser.Physics.Arcade.Sprite) {
     const explosion = this.add.image(asteroide.x, asteroide.y, 'explosion');
-    explosion.setScale(0.09 );
-    explosion.setOrigin(0.2);
+    explosion.setScale(0.09);
+    explosion.setOrigin(0.5);
 
-    this.time.delayedCall(300, () => {
-      explosion.destroy();
-    });
+    this.time.delayedCall(300, () => explosion.destroy());
 
     disparo.destroy();
     asteroide.destroy();
+
+    // 🎯 Aumentar puntuación
+    this.puntuacion += 10;
+    this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
   }
 
   override update(): void {
@@ -197,8 +212,3 @@ class MainScene extends Phaser.Scene {
     disparo.setAngle(-90);
   }
 }
-
-
-
-
-
