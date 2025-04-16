@@ -115,7 +115,29 @@ Botones para pausar, reanudar, reiniciar y volver al inicio mientras se juega.
 
 ![Controles de la partida](src/assets/img/pantalla_controles_extra.png)
 
+---
+### 🔥 Mejoras EXTRAS implementadas
+💣 Asteroides variados
+✔️ Asteroides de 3 tamaños: grandes, medianos y pequeños.
 
+✔️ Velocidades y puntuaciones diferentes:
+
+Grande: lento, da 1 punto.
+
+Mediano: medio, da 2 puntos.
+
+Pequeño: rápido, da 3 puntos.
+
+✔️ Cada tipo con un sprite distinto (asteroide.png, asteroide_mediano.png, asteroide_grande.png).
+
+👾 Jefe extra de 10 puntos
+✔️ Un jefe espacial aparece cuando se alcanzan 50 puntos.
+
+✔️ Tiene 10 de vida y se destruye con disparos normales.
+
+✔️ Al derrotarlo, otorga +10 puntos.
+
+✔️ El juego continúa con normalidad hasta los 150 puntos y se puede ganar la partida.
 ---
 
 ## 🌟 Autor
