@@ -71,49 +71,49 @@ A continuación se muestran algunas capturas representativas del juego *Guardian
 ### 🛫 Pantalla de inicio
 El jugador introduce su nombre antes de comenzar la partida.
 
-![Pantalla de inicio](img/pantalla_inicio.png)
+![Pantalla de inicio](src/assets/img/pantalla_inicio.png)
 
 ---
 
 ### 🚀 Juego en curso
 La nave se mueve mientras caen los asteroides y el jugador puede disparar.
 
-![Juego en curso](img/pantalla_juego.png)
+![Juego en curso](src/assets/img/pantalla_juego.png)
 
 ---
 
 ### 🔫 Disparo a asteroide
 Un disparo impacta en un asteroide y suma 1 punto.
 
-![Disparo y destrucción de asteroide](img/pantalla_disparo_asteroide.png)
+![Disparo y destrucción de asteroide](src/assets/img/pantalla_disparo_asteroide.png)
 
 ---
 
 ### 💥 Colisión con asteroide
 Al colisionar con un asteroide, se muestra el mensaje de derrota y se pregunta si desea reiniciar.
 
-![Mensaje de derrota con confirmación](img/pantalla_derrota_confirmacion.png)
+![Mensaje de derrota con confirmación](src/assets/img/pantalla_derrota_confirmacion.png)
 
 ---
 
 ### 🏆 Victoria
 Cuando se alcanzan 150 puntos, aparece el mensaje de victoria.
 
-![Victoria](img/pantalla_victoria.png)
+![Victoria](src/assets/img/pantalla_victoria.png)
 
 ---
 
 ### 📊 Tabla de puntuaciones
 Se muestran los jugadores y su máxima puntuación guardada en localStorage.
 
-![Puntuaciones](img/pantalla_puntuaciones.png)
+![Puntuaciones](src/assets/img/pantalla_puntuaciones.png)
 
 ---
 
 ### 🕹️ Controles extra
 Botones para pausar, reanudar, reiniciar y volver al inicio mientras se juega.
 
-![Controles de la partida](img/pantalla_controles_extra.png)
+![Controles de la partida](src/assets/img/pantalla_controles_extra.png)
 
 
 ---
