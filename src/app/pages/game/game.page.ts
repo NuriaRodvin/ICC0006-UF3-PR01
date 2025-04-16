@@ -103,6 +103,11 @@ class MainScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Reinicia estado
+    this.juegoTerminado = false;
+    this.puntuacion = 0;
+    this.direccionBoton = null;
+
     this.add.image(0, 0, 'fondo').setOrigin(0);
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
@@ -128,24 +133,24 @@ class MainScene extends Phaser.Scene {
           const asteroide = this.asteroides.create(x, -50, 'asteroide') as Phaser.Physics.Arcade.Sprite;
           asteroide.setVelocityY(100);
           asteroide.setScale(0.5);
+          asteroide.setCollideWorldBounds(false);
         }
       },
     });
 
-    // 💥 Disparo vs asteroide
+    // Colisión disparo con asteroide
     this.physics.add.overlap(
       this.disparos,
       this.asteroides,
-      (disparo, asteroide) =>
-        this.colisionDisparoAsteroide(
-          disparo as Phaser.Physics.Arcade.Sprite,
-          asteroide as Phaser.Physics.Arcade.Sprite
-        ),
+      (disparoObj, asteroideObj) => this.colisionDisparoAsteroide(
+        disparoObj as Phaser.Physics.Arcade.Sprite,
+        asteroideObj as Phaser.Physics.Arcade.Sprite
+      ),
       undefined,
       this
     );
 
-    // ☠️ Nave vs asteroide
+    // Colisión nave con asteroide
     this.physics.add.overlap(
       this.nave,
       this.asteroides,
@@ -168,26 +173,26 @@ class MainScene extends Phaser.Scene {
     this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
 
     if (this.puntuacion >= 150) {
-      this.terminarPartida(true);
+      this.terminarPartida();
     }
   }
 
   colisionNaveAsteroide() {
-    if (this.juegoTerminado) return;
-
     this.juegoTerminado = true;
     this.scene.pause();
 
-    this.add.text(160, 240, '¡Has perdido!', {
+    this.add.text(160, 240, '💥 Has perdido', {
       fontSize: '24px',
       color: '#ff0000',
       fontFamily: 'Arial',
     }).setOrigin(0.5);
 
-    this.time.delayedCall(2000, () => this.guardarYSalir());
+    this.time.delayedCall(2000, () => {
+      this.scene.restart(); // ✅ reinicio limpio
+    });
   }
 
-  terminarPartida(victoria: boolean) {
+  terminarPartida() {
     this.juegoTerminado = true;
     this.scene.pause();
 
@@ -197,22 +202,20 @@ class MainScene extends Phaser.Scene {
       fontFamily: 'Arial',
     }).setOrigin(0.5);
 
-    this.time.delayedCall(2000, () => this.guardarYSalir());
-  }
+    this.time.delayedCall(2000, () => {
+      const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
+      const almacenadas = localStorage.getItem('scores');
+      let scores = almacenadas ? JSON.parse(almacenadas) : [];
+      const existente = scores.find((entry: any) => entry.name === nombre);
 
-  guardarYSalir() {
-    const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
-    const almacenadas = localStorage.getItem('scores');
-    let scores = almacenadas ? JSON.parse(almacenadas) : [];
-    const existente = scores.find((entry: any) => entry.name === nombre);
+      if (!existente || this.puntuacion > (existente?.score ?? 0)) {
+        scores = scores.filter((entry: any) => entry.name !== nombre);
+        scores.push({ name: nombre, score: this.puntuacion });
+      }
 
-    if (!existente || this.puntuacion > (existente?.score ?? 0)) {
-      scores = scores.filter((entry: any) => entry.name !== nombre);
-      scores.push({ name: nombre, score: this.puntuacion });
-    }
-
-    localStorage.setItem('scores', JSON.stringify(scores));
-    window.location.href = '/pages/scores';
+      localStorage.setItem('scores', JSON.stringify(scores));
+      window.location.href = '/pages/scores';
+    });
   }
 
   override update(): void {
@@ -240,7 +243,9 @@ class MainScene extends Phaser.Scene {
 
     this.asteroides.children.iterate((obj): false => {
       const ast = obj as Phaser.Physics.Arcade.Sprite;
-      if (ast.y > 500) ast.destroy();
+      if (ast.y > 500) {
+        ast.destroy();
+      }
       return false;
     });
   }
@@ -270,4 +275,6 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
+
+
 
