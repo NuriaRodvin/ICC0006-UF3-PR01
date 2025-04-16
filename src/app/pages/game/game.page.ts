@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
 })
-// ...importaciones y @Component igual que antes
 
 export class GamePage implements AfterViewInit {
   game!: Phaser.Game;
@@ -35,6 +34,7 @@ export class GamePage implements AfterViewInit {
 
     this.game = new Phaser.Game(config);
 
+    // ⏳ Redirección automática a puntuaciones tras 5 segundos
     setTimeout(() => {
       const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
       const nuevaPuntuacion = Math.floor(Math.random() * 100);
@@ -42,7 +42,7 @@ export class GamePage implements AfterViewInit {
       let scores = almacenadas ? JSON.parse(almacenadas) : [];
       const existente = scores.find((entry: any) => entry.name === nombre);
 
-      if (!existente || nuevaPuntuacion > existente.score) {
+      if (!existente || nuevaPuntuacion > (existente?.score ?? 0)) {
         scores = scores.filter((entry: any) => entry.name !== nombre);
         scores.push({ name: nombre, score: nuevaPuntuacion });
         console.log(`✅ Puntuación actualizada para ${nombre}: ${nuevaPuntuacion}`);
@@ -85,11 +85,13 @@ export class GamePage implements AfterViewInit {
 // 👉 ESCENA DEL JUEGO
 class MainScene extends Phaser.Scene {
   disparos!: Phaser.Physics.Arcade.Group;
+  asteroides!: Phaser.Physics.Arcade.Group;
   ultimaTeclaEspacio: number = 0;
 
   nave!: Phaser.Physics.Arcade.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   direccionBoton: string | null = null;
+  teclaEspacio!: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -99,14 +101,31 @@ class MainScene extends Phaser.Scene {
     this.load.image('fondo', 'assets/img/fondo.png');
     this.load.image('nave', 'assets/img/nave.png');
     this.load.image('disparo', 'assets/img/disparo.png');
+    this.load.image('asteroide', 'assets/img/asteroide.png'); // NUEVO
   }
 
   create(): void {
     this.add.image(0, 0, 'fondo').setOrigin(0);
     this.nave = this.physics.add.sprite(160, 450, 'nave');
     this.nave.setCollideWorldBounds(true);
+
     this.cursors = this.input.keyboard?.createCursorKeys()!;
+    this.teclaEspacio = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.disparos = this.physics.add.group();
+    this.asteroides = this.physics.add.group(); // NUEVO
+
+    // NUEVO: Generación de asteroides
+    this.time.addEvent({
+      delay: 1500,
+      loop: true,
+      callback: () => {
+        const x = Phaser.Math.Between(20, 300);
+        const asteroide = this.asteroides.create(x, -50, 'asteroide');
+        asteroide.setVelocityY(100);
+        asteroide.setScale(0.5);
+        asteroide.setCollideWorldBounds(false);
+      }
+    });
   }
 
   override update(): void {
@@ -131,7 +150,17 @@ class MainScene extends Phaser.Scene {
       this.disparar();
       this.ultimaTeclaEspacio = ahora;
     }
+
+    // ✅ Eliminar asteroides fuera de pantalla
+  if (this.asteroides) {
+    this.asteroides.children.iterate((asteroide: any) => {
+      if (asteroide.y > 500) {
+        asteroide.destroy();
+      }
+      return false;
+    });
   }
+}
 
   moverDesdeBoton(direccion: string) {
     this.direccionBoton = direccion;
@@ -144,8 +173,7 @@ class MainScene extends Phaser.Scene {
   disparar() {
     const disparo = this.disparos.create(this.nave.x, this.nave.y - 20, 'disparo');
     disparo.setVelocityY(-300);
-    disparo.setScale(0.3);         // 🔽 Tamaño reducido del disparo
-    disparo.setAngle(-90);         // 🔄 Gira si es horizontal
+    disparo.setScale(0.3);
+    disparo.setAngle(-90);
   }
-  
 }
