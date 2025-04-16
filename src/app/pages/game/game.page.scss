@@ -1,17 +1,23 @@
-// 🎮 Contenedor del juego
+// 🎮 Contenedor del juego (canvas Phaser)
 #game-container {
-  width: 320px;
-  height: 480px;
+  width: 360px; // Aumentamos el espacio
+  height: 540px;
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   background-color: black;
+
+  canvas {
+    display: block;
+    image-rendering: auto;
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 // 🚀 Botones superiores (inicio, reinicio, puntuaciones)
-// 🔘 Botones superiores con brillo sci-fi y animación de pulso
 .button-container {
   display: flex;
   justify-content: center;
@@ -42,7 +48,7 @@
   }
 }
 
-// ✨ Animación de pulso suave para botones sci-fi
+// ✨ Animación de pulso para botones sci-fi
 @keyframes pulsoSciFi {
   0% {
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
@@ -55,8 +61,7 @@
   }
 }
 
-
-// 🎮 Controles de movimiento
+// 🎮 Controles de movimiento (flechas)
 .controles {
   display: flex;
   flex-direction: column;
@@ -92,7 +97,7 @@
   }
 }
 
-// 🔫 Botón de disparo con estilo láser
+// 🔫 Botón de disparo láser
 .disparo-boton-container {
   display: flex;
   justify-content: center;
@@ -121,19 +126,5 @@
 
   &:active {
     transform: scale(0.95);
-  }
-}
-
-
-// ✨ Animación de pulso suave para botones sci-fi
-@keyframes pulsoSciFi {
-  0% {
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 1);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
   }
 }
