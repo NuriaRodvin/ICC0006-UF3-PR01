@@ -92,7 +92,11 @@ class MainScene extends Phaser.Scene {
   textoPuntuacion!: Phaser.GameObjects.Text;
   juegoTerminado: boolean = false;
 
-  // 🎵 SONIDOS
+  jefe!: Phaser.Physics.Arcade.Sprite | null;
+  jefeVida: number = 10;
+  jefeActivo: boolean = false;
+  jefeDerrotado: boolean = false;
+
   musicaFondo!: Phaser.Sound.BaseSound;
   sonidoDisparo!: Phaser.Sound.BaseSound;
   sonidoExplosion!: Phaser.Sound.BaseSound;
@@ -118,6 +122,7 @@ class MainScene extends Phaser.Scene {
     this.load.image('asteroide_grande', 'assets/img/asteroide_grande.png');
     this.load.image('asteroide_mediano', 'assets/img/asteroide_mediano.png');
     this.load.image('asteroide', 'assets/img/asteroide.png');
+    this.load.image('jefe', 'assets/img/jefe.png');
   }
 
   create(): void {
@@ -206,8 +211,39 @@ class MainScene extends Phaser.Scene {
     disparo.destroy();
     asteroide.destroy();
 
+    if (this.puntuacion >= 50 && !this.jefeActivo && !this.jefeDerrotado) {
+      this.invocarJefe();
+    }
+
     if (this.puntuacion >= 150) {
       this.terminarPartida();
+    }
+  }
+
+  invocarJefe() {
+    this.jefeActivo = true;
+    this.jefeVida = 10;
+
+    this.jefe = this.physics.add.sprite(160, -60, 'jefe').setScale(0.4);
+    this.jefe.setVelocityY(60);
+    this.physics.add.overlap(this.disparos, this.jefe, this.colisionDisparoJefe, undefined, this);
+    this.physics.add.overlap(this.nave, this.jefe, this.colisionNaveAsteroide, undefined, this);
+  }
+
+  colisionDisparoJefe(disparo: Phaser.Physics.Arcade.Sprite, jefe: Phaser.Physics.Arcade.Sprite) {
+    disparo.destroy();
+    this.jefeVida--;
+
+    const explosion = this.add.image(jefe.x, jefe.y, 'explosion').setScale(0.1).setOrigin(0.5);
+    this.time.delayedCall(300, () => explosion.destroy());
+    this.sonidoExplosion.play();
+
+    if (this.jefeVida <= 0) {
+      jefe.destroy();
+      this.puntuacion += 10;
+      this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
+      this.jefeActivo = false;
+      this.jefeDerrotado = true;
     }
   }
 
@@ -286,7 +322,7 @@ class MainScene extends Phaser.Scene {
     const ahora = this.time.now;
     if (this.cursors.space?.isDown && ahora - this.ultimaTeclaEspacio > 300) {
       this.disparar();
-      this.sonidoDisparo.play(); // 🔊 Solo aquí
+      this.sonidoDisparo.play();
       this.ultimaTeclaEspacio = ahora;
     }
 
@@ -317,10 +353,4 @@ class MainScene extends Phaser.Scene {
     }
   }
 }
-
-
-
-
-
-
 
