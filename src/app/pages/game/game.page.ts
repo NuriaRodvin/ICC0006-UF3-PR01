@@ -32,23 +32,6 @@ export class GamePage implements AfterViewInit {
     };
 
     this.game = new Phaser.Game(config);
-
-    setTimeout(() => {
-      const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
-      const nuevaPuntuacion = Math.floor(Math.random() * 100);
-      const almacenadas = localStorage.getItem('scores');
-      let scores = almacenadas ? JSON.parse(almacenadas) : [];
-      const existente = scores.find((entry: any) => entry.name === nombre);
-
-      if (!existente || nuevaPuntuacion > (existente?.score ?? 0)) {
-        scores = scores.filter((entry: any) => entry.name !== nombre);
-        scores.push({ name: nombre, score: nuevaPuntuacion });
-        console.log(`✅ Puntuación actualizada para ${nombre}: ${nuevaPuntuacion}`);
-      }
-
-      localStorage.setItem('scores', JSON.stringify(scores));
-      this.router.navigateByUrl('/pages/scores');
-    }, 10000);
   }
 
   goHome() {
@@ -103,7 +86,7 @@ class MainScene extends Phaser.Scene {
     this.load.image('nave', 'assets/img/nave.png');
     this.load.image('disparo', 'assets/img/disparo.png');
     this.load.image('asteroide', 'assets/img/asteroide.png');
-    this.load.image('explosion', 'assets/img/explosion.png'); // imagen estática
+    this.load.image('explosion', 'assets/img/explosion.png');
   }
 
   create(): void {
@@ -116,7 +99,7 @@ class MainScene extends Phaser.Scene {
     this.disparos = this.physics.add.group();
     this.asteroides = this.physics.add.group();
 
-    // 🎯 Texto de puntuación
+    // 🎯 Mostrar puntuación
     this.textoPuntuacion = this.add.text(10, 10, 'Puntos: 0', {
       fontSize: '18px',
       color: '#ffffff',
@@ -160,9 +143,40 @@ class MainScene extends Phaser.Scene {
     disparo.destroy();
     asteroide.destroy();
 
-    // 🎯 Aumentar puntuación
+    // 🎯 Aumentar puntuación real
     this.puntuacion += 10;
     this.textoPuntuacion.setText('Puntos: ' + this.puntuacion);
+
+    // 🏁 Si llega a 150, terminar la partida
+    if (this.puntuacion >= 150) {
+      this.terminarPartida();
+    }
+  }
+
+  terminarPartida() {
+    this.scene.pause();
+
+    this.add.text(160, 240, '¡Victoria!', {
+      fontSize: '24px',
+      color: '#00ff00',
+      fontFamily: 'Arial',
+    }).setOrigin(0.5);
+
+    this.time.delayedCall(2000, () => {
+      const nombre = localStorage.getItem('nombreJugador') || 'Piloto desconocido';
+
+      const almacenadas = localStorage.getItem('scores');
+      let scores = almacenadas ? JSON.parse(almacenadas) : [];
+      const existente = scores.find((entry: any) => entry.name === nombre);
+
+      if (!existente || this.puntuacion > (existente?.score ?? 0)) {
+        scores = scores.filter((entry: any) => entry.name !== nombre);
+        scores.push({ name: nombre, score: this.puntuacion });
+      }
+
+      localStorage.setItem('scores', JSON.stringify(scores));
+      window.location.href = '/pages/scores';
+    });
   }
 
   override update(): void {
