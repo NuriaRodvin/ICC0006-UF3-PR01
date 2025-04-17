@@ -140,15 +140,13 @@ class MainScene extends Phaser.Scene {
     this.sonidoExplosion = this.sound.add('explosion');
     this.musicaGanador = this.sound.add('ganador');
     this.musicaDerrota = this.sound.add('derrota');
-
     this.musicaFondo.play();
 
     this.textoPuntuacion = this.add.text(10, 10, 'Puntos: 0', {
       fontSize: '18px',
       color: '#ffffff',
       fontFamily: 'Arial',
-    });
-    this.textoPuntuacion.setDepth(1);
+    }).setDepth(1);
 
     this.time.addEvent({
       delay: 1500,
@@ -182,6 +180,8 @@ class MainScene extends Phaser.Scene {
           const asteroide = this.asteroides.create(x, -50, sprite) as Phaser.Physics.Arcade.Sprite;
           asteroide.setVelocityY(velocidad);
           asteroide.setScale(escala);
+          asteroide.setSize(asteroide.width * 0.5, asteroide.height * 0.5);
+          asteroide.setOffset(asteroide.width * 0.25, asteroide.height * 0.25);
           (asteroide as any).puntos = puntos;
         }
       },
@@ -196,6 +196,8 @@ class MainScene extends Phaser.Scene {
     disparo.setVelocityY(-300);
     disparo.setScale(0.3);
     disparo.setAngle(-90);
+    disparo.setSize(disparo.width * 0.5, disparo.height * 0.5);
+    disparo.setOffset(disparo.width * 0.25, disparo.height * 0.25);
   }
 
   colisionDisparoAsteroide(disparo: Phaser.Physics.Arcade.Sprite, asteroide: Phaser.Physics.Arcade.Sprite) {
@@ -262,7 +264,6 @@ class MainScene extends Phaser.Scene {
 
     this.time.delayedCall(500, () => {
       this.scene.pause();
-
       setTimeout(() => {
         const reiniciar = confirm('💥 Has perdido. ¿Quieres reiniciar la partida?');
         if (reiniciar) {
