@@ -192,13 +192,18 @@ class MainScene extends Phaser.Scene {
   }
 
   disparar() {
-    const disparo = this.disparos.create(this.nave.x, this.nave.y - 20, 'disparo') as Phaser.Physics.Arcade.Sprite;
-    disparo.setVelocityY(-300);
-    disparo.setScale(0.3);
-    disparo.setAngle(-90);
-    disparo.setSize(disparo.width * 0.5, disparo.height * 0.5);
-    disparo.setOffset(disparo.width * 0.25, disparo.height * 0.25);
-  }
+  const disparo = this.disparos.create(this.nave.x + 1.6, this.nave.y - 20, 'disparo') as Phaser.Physics.Arcade.Sprite;
+  disparo.setVelocityY(-300);
+  disparo.setScale(0.15);
+  disparo.setAngle(-90);
+  disparo.setOrigin(0.5, 1);
+  disparo.setSize(disparo.width * 0.5, disparo.height * 0.5);
+  disparo.setOffset(disparo.width * 0.25, 0);
+}
+
+  
+  
+  
 
   colisionDisparoAsteroide(disparo: Phaser.Physics.Arcade.Sprite, asteroide: Phaser.Physics.Arcade.Sprite) {
     const explosion = this.add.image(asteroide.x, asteroide.y, 'explosion');
